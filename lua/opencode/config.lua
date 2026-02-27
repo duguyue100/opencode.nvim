@@ -129,10 +129,10 @@ local defaults = {
     },
   },
   ask_multiline = {
-    width = 0.6,                                     -- Fraction of editor width (0.0–1.0)
-    height = 0.5,                                    -- Fraction of editor height (0.0–1.0)
+    width = 0.5,                                     -- Fraction of editor width (0.0–1.0)
+    height = 0.3,                                    -- Fraction of editor height (0.0–1.0)
     border = "rounded",                              -- Border style (any valid nvim_open_win border)
-    title = " 󰚩 Ask opencode (multiline) ",          -- Window title
+    title = " 󰚩 Ask opencode ",          -- Window title
     newline_key = { "<S-CR>", "<C-CR>" },            -- Key(s) to insert a newline in insert mode
   },
   select = {
