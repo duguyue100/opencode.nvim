@@ -34,9 +34,10 @@ function M.ask_multiline(default, context)
         vim.bo[buf].filetype = "opencode_ask"
 
         -- Pre-fill default text if provided
+        local default_lines = nil
         if default and default ~= "" then
-          local lines = vim.split(default, "\n", { plain = true })
-          vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+          default_lines = vim.split(default, "\n", { plain = true })
+          vim.api.nvim_buf_set_lines(buf, 0, -1, false, default_lines)
         end
 
         -- Build footer from configured newline key
@@ -68,8 +69,15 @@ function M.ask_multiline(default, context)
         -- Start the in-process LSP for context/subagent completions
         pcall(vim.lsp.start, require("opencode.ui.ask.cmp"), { bufnr = buf })
 
-        -- Enter insert mode
-        vim.cmd("startinsert")
+        -- Enter insert mode, positioned after any pre-filled default text
+        if default_lines then
+          local last_line = #default_lines
+          local last_col = #default_lines[last_line]
+          vim.api.nvim_win_set_cursor(win, { last_line, last_col })
+          vim.cmd("startinsert!")
+        else
+          vim.cmd("startinsert")
+        end
 
         local closed = false
         local function close_win()
@@ -77,6 +85,7 @@ function M.ask_multiline(default, context)
             return
           end
           closed = true
+          vim.cmd("stopinsert")
           if vim.api.nvim_win_is_valid(win) then
             vim.api.nvim_win_close(win, true)
           end
