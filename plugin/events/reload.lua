@@ -1,6 +1,6 @@
 vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("OpencodeReload", { clear = true }),
-  pattern = "OpencodeEvent:file.edited",
+  pattern = "OpencodeEvent:session.diff",
   callback = function(args)
     if require("opencode.config").opts.events.reload then
       if not vim.o.autoread then
