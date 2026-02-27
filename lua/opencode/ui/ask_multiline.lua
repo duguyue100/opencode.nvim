@@ -4,7 +4,6 @@ local M = {}
 ---
 ---Keymaps:
 --- - `<CR>` (insert/normal): Submit the prompt.
---- - `<C-CR>` / `<S-CR>` (insert): Insert a newline.
 --- - `<Esc>` / `q` (normal): Cancel and close the window.
 ---
 ---@param default? string Text to pre-fill the input with.
@@ -40,12 +39,7 @@ function M.ask_multiline(default, context)
           vim.api.nvim_buf_set_lines(buf, 0, -1, false, default_lines)
         end
 
-        -- Build footer from configured newline key
-        local newline_key_label = config.newline_key
-        if type(newline_key_label) == "table" then
-          newline_key_label = table.concat(config.newline_key, "/")
-        end
-        local footer = " <CR> submit  " .. newline_key_label .. " newline  <Esc> cancel "
+        local footer = " <CR> submit  <Esc> cancel "
 
         -- Open the floating window
         local win = vim.api.nvim_open_win(buf, true, {
@@ -110,29 +104,8 @@ function M.ask_multiline(default, context)
           reject()
         end
 
-        -- Insert a newline at the cursor position
-        local function insert_newline()
-          local cursor = vim.api.nvim_win_get_cursor(win)
-          local line = cursor[1] - 1
-          local col_pos = cursor[2]
-          local current_line = vim.api.nvim_buf_get_lines(buf, line, line + 1, false)[1] or ""
-          local before = current_line:sub(1, col_pos)
-          local after = current_line:sub(col_pos + 1)
-          vim.api.nvim_buf_set_lines(buf, line, line + 1, false, { before, after })
-          vim.api.nvim_win_set_cursor(win, { line + 2, 0 })
-        end
-
         -- <CR> submits in both insert and normal mode
         vim.keymap.set({ "n", "i" }, "<CR>", submit, { buffer = buf, desc = "Submit prompt" })
-
-        -- Newline keys (configurable) — insert mode only
-        local newline_keys = config.newline_key
-        if type(newline_keys) == "string" then
-          newline_keys = { newline_keys }
-        end
-        for _, key in ipairs(newline_keys) do
-          vim.keymap.set("i", key, insert_newline, { buffer = buf, desc = "Insert newline" })
-        end
 
         -- Cancel
         vim.keymap.set("n", "<Esc>", cancel, { buffer = buf, desc = "Cancel prompt" })

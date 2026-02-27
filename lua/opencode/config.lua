@@ -45,7 +45,6 @@ vim.g.opencode_opts = vim.g.opencode_opts
 ---@field height? number Fraction of editor height (0.0–1.0).
 ---@field border? string|string[] Border style (any valid nvim_open_win border).
 ---@field title? string Window title.
----@field newline_key? string|string[] Key(s) to insert a newline in insert mode.
 
 ---@type opencode.Opts
 local defaults = {
@@ -133,7 +132,6 @@ local defaults = {
     height = 0.3,                                    -- Fraction of editor height (0.0–1.0)
     border = "rounded",                              -- Border style (any valid nvim_open_win border)
     title = " 󰚩 Ask opencode ",          -- Window title
-    newline_key = {},            -- Key(s) to insert a newline in insert mode
   },
   select = {
     prompt = "opencode: ",
