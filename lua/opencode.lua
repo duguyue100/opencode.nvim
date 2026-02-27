@@ -44,6 +44,33 @@ M.ask = function(default, opts)
     end)
 end
 
+---Input a multiline prompt for `opencode` in a centered floating window.
+---
+--- - Press `<CR>` to submit (in both insert and normal mode).
+--- - Press `<S-CR>` or `<C-CR>` to insert a newline in insert mode.
+--- - Press `<Esc>` or `q` in normal mode to cancel.
+--- - Supports context and subagent completions via LSP.
+--- - Window size configurable via `ask_multiline.width` / `ask_multiline.height`.
+---
+---@param default? string Text to pre-fill the input with.
+---@param opts? opencode.api.prompt.Opts Options for `prompt()`.
+M.ask_multiline = function(default, opts)
+  opts = opts or {}
+  opts.context = opts.context or require("opencode.context").new()
+
+  return require("opencode.ui.ask_multiline")
+    .ask_multiline(default, opts.context)
+    :next(function(input) ---@param input string
+      opts.context:clear()
+      return require("opencode.api.prompt").prompt(input, opts)
+    end)
+    :catch(function(err)
+      if err then
+        vim.notify(err, vim.log.levels.ERROR, { title = "opencode" })
+      end
+    end)
+end
+
 ---Select from all `opencode.nvim` functionality.
 ---
 --- - Prompts

@@ -22,12 +22,12 @@ vim.g.opencode_opts = vim.g.opencode_opts
 ---Prompts to reference or select from.
 ---@field prompts? table<string, opencode.Prompt>
 ---
----Options for `ask()`.
----Supports [`snacks.input`](https://github.com/folke/snacks.nvim/blob/main/docs/input.md).
+---Options for `ask()`.\n---Supports [`snacks.input`](https://github.com/folke/snacks.nvim/blob/main/docs/input.md).
 ---@field ask? opencode.ask.Opts
 ---
----Options for `select()`.
----Supports [`snacks.picker`](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md).
+---Options for `ask_multiline()`.\n---@field ask_multiline? opencode.ask_multiline.Opts
+---
+---Options for `select()`.\n---Supports [`snacks.picker`](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md).
 ---@field select? opencode.select.Opts
 ---
 ---Options for the in-process LSP that interacts with `opencode`.
@@ -39,6 +39,13 @@ vim.g.opencode_opts = vim.g.opencode_opts
 ---@class opencode.Prompt : opencode.api.prompt.Opts
 ---@field prompt string The prompt to send to `opencode`.
 ---@field ask? boolean Call `ask(prompt)` instead of `prompt(prompt)`. Useful for prompts that expect additional user input.
+
+---@class opencode.ask_multiline.Opts
+---@field width? number Fraction of editor width (0.0–1.0).
+---@field height? number Fraction of editor height (0.0–1.0).
+---@field border? string|string[] Border style (any valid nvim_open_win border).
+---@field title? string Window title.
+---@field newline_key? string|string[] Key(s) to insert a newline in insert mode.
 
 ---@type opencode.Opts
 local defaults = {
@@ -96,7 +103,7 @@ local defaults = {
             "<S-CR>",
             function(win)
               -- Append `\n` to leverage `ask()`'s auto-append behavior in that case
-              local text = win:text() .. "\\n"
+              local text = win:text() .. "\n"
               vim.api.nvim_buf_set_lines(win.buf, 0, -1, false, { text })
               win:execute("confirm")
             end,
@@ -120,6 +127,13 @@ local defaults = {
         end,
       },
     },
+  },
+  ask_multiline = {
+    width = 0.6,                                     -- Fraction of editor width (0.0–1.0)
+    height = 0.5,                                    -- Fraction of editor height (0.0–1.0)
+    border = "rounded",                              -- Border style (any valid nvim_open_win border)
+    title = " 󰚩 Ask opencode (multiline) ",          -- Window title
+    newline_key = { "<S-CR>", "<C-CR>" },            -- Key(s) to insert a newline in insert mode
   },
   select = {
     prompt = "opencode: ",
