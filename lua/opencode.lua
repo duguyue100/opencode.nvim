@@ -98,7 +98,7 @@ M.select_session = function()
     end)
     :catch(function(err)
       if err then
-        vim.notify(err, vim.log.levels.ERROR)
+        vim.notify(err, vim.log.levels.ERROR, { title = "opencode" })
       end
     end)
 end
